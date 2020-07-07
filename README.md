@@ -43,6 +43,30 @@ it will return the first error and skip next checking. Set parameter `fix` to <c
 if you wanna auto fix struct filed. It's very helpful to make sure the value in custom range, and set
 default value if necessary.</p>
 
+
+## Auto Fix Value
+
+<p>Set parameter `fix` to <code>true</code>, <code>ValidObject</code>function will do some adjustment.</p>
+
+ - if the filed is number(<code>int</code>, <code>uint</code>...), logic is like this:
+
+```
+   if currentValue < min {
+       if currentValue == 0 {
+            currentValue = defalutValue
+       } else {
+            currentValue = min
+       }
+   }
+   if currentValue > max {
+       currentValue = max
+   }
+     
+
+``` 
+
+<p>if there is no <code>defalut</code> tag set, <code>min</code> will be used as default value instead. </p>
+
 ## Tag
 
 <p>Tags are used for describe the constraint of the field.</p>
@@ -52,6 +76,7 @@ default value if necessary.</p>
 | min | Int, Int8,Int16,Int32,Int64<br/>Uint,Uint8,Uint16,Uint32,Uint64| minimum value |
 | max | Int, Int8,Int16,Int32,Int64<br/>Uint,Uint8,Uint16,Uint32,Uint64| Maximum value |
 | default | Int, Int8,Int16,Int32,Int64<br/>Uint,Uint8,Uint16,Uint32,Uint64| defalut value |
+
 
 ## TO BE CONTINUED
 
