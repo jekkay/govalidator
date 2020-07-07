@@ -62,7 +62,6 @@ default value if necessary.</p>
        currentValue = max
    }
      
-
 ``` 
 
 <p>if there is no <code>defalut</code> tag set, <code>min</code> will be used as default value instead. </p>
