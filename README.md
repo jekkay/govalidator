@@ -43,6 +43,10 @@ it will return the first error and skip next checking. Set parameter `fix` to <c
 if you wanna auto fix struct filed. It's very helpful to make sure the value in custom range, and set
 default value if necessary.</p>
 
+it's available for the nested struct as well, see test file for more: [validator_test.go](./validator_test.go).
+
+
+
 
 ## Auto Fix Value
 
@@ -53,7 +57,7 @@ default value if necessary.</p>
 ```
    if currentValue < min {
        if currentValue == 0 {
-            currentValue = defalutValue
+            currentValue = defalut
        } else {
             currentValue = min
        }
@@ -68,7 +72,7 @@ default value if necessary.</p>
 
 ## Tag
 
-<p>Tags are used for describe the constraint of the field.</p>
+<p>Tags are used to describe the constraint of the field.</p>
 
 | Tag | Field Type |description |
 |------|------|------|
