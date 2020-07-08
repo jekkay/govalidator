@@ -54,9 +54,15 @@ default value if necessary.</p>
 it's available for the nested struct as well, see test file for more: [validator_test.go](./validator_test.go).
 
 
+## Function
 
+| function | parameters | 
+|--------|--------|
+| ValidObject | <code>obj</code>:ptr, a pointer to struct object<br/><code>fix</code>: boolean, indicate whether auto adjust value<br/>|
 
 ## Auto Fix Value
+
+
 
 <p>Set parameter `fix` to <code>true</code>, <code>ValidObject</code>function will do some adjustment.</p>
 
