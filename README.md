@@ -6,6 +6,14 @@ A simple validator for struct filed using tag
 ## quick start
 
 ```
+
+import (
+    "github.com/jekkay/govalidator"
+    "encoding/json"
+    "fmt"
+    "testing"
+}
+
 type Range struct {
 	A int32   `json:"a" min:"10" max:"100" default:"50"`
 	B int32   `json:"b" min:"20" max:"90" default:"80"`
@@ -19,10 +27,10 @@ func TestValidObject2(t *testing.T) {
 	r.C = new(uint64)
 	*r.C = 0
 
-	if e := ValidObject(r, false); e != nil {
+	if e := govalidator.ValidObject(r, false); e != nil {
 		fmt.Println(e)
 	}
-	ValidObject(r, true)
+	govalidator.ValidObject(r, true)
 	bs, _ := json.MarshalIndent(r, "", "  ")
 	fmt.Println(string(bs))
 }
