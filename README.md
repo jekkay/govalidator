@@ -95,6 +95,41 @@ it's available for the nested struct as well, see test file for more: [validator
 | default | Int, Int8,Int16,Int32,Int64<br/>Uint,Uint8,Uint16,Uint32,Uint64| defalut value |
 
 
+| Field Type | min | max | default |
+|-------|-------|-------|-------|
+| Uint | 0 | 2^32 -1 | 0 |
+| Uint8 | 0 | 2^8 -1 | 0 |
+| Uint16 | 0 | 2^16 -1 | 0 |
+| Uint32 | 0 | 2^32 -1 | 0 |
+| Uint64 | 0 | 2^64 -1 | 0 |
+
+
+| Field Type | min | max | default |
+|-------|-------|-------|-------|
+| Int | -2^31 | 2^31 -1 | 0 |
+| Int8 | -2^7 | 2^7 -1 | 0 |
+| Int16 | -2^15 | 2^15 -1 | 0 |
+| Int32 | -2^31 | 2^31 -1 | 0 |
+| Int64 | -2^63 | 2^63 -1 | 0 |
+
+| Field Type | min | max | default | precision|
+|-------|-------|-------|-------|-------|
+| Float32 | ±1.18×10^38 | ±3.4×10^38 | 0 | 7 |
+| Float64 | ±2.23×10^308 | ±1.80×10^308	 | 0 | 16 |
+
+| Field Type | min | max | default | req|
+|-------|-------|-------|-------|-------|
+| Ptr | - | - | nil | defalut value: false |
+
+| Tag | description | require |
+|------|------|------|
+| default | default value | √ | 
+| min | the minimum length of the string | × |
+| max | the maximum length of the string | × |
+| req | require value | × |
+| regex | regular expression | × |
+| in | value options | × |
+
 ## TO BE CONTINUED
 
 ## Author
