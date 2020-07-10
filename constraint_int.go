@@ -13,7 +13,8 @@ type rangeInt struct {
 }
 
 type constraintInt struct {
-	k reflect.Kind
+	k  reflect.Kind
+	fi *reflect.StructField
 
 	minFlag     flagSet
 	minInt      int64
@@ -35,7 +36,7 @@ func (c *constraintInt) reset() {
 
 func (c *constraintInt) validate(value *reflect.Value, fix bool) error {
 	v := value.Int()
-	name := value.Type().Name()
+	name := c.fi.Name
 	if c.minFlag == set_yes && v < c.minInt {
 		if fix && value.CanSet() {
 			if v == 0 {
@@ -67,6 +68,7 @@ func describeInt(fi *reflect.StructField) (constraint, []error) {
 	es := make([]error, 0, 0)
 	//c.k =  fi.Type.Kind()
 	c.k = getLastKind(fi.Type)
+	c.fi = fi
 	if minV := fi.Tag.Get(flagMin); len(minV) > 0 {
 		if v, e := strconv.ParseInt(minV, 10, 64); e != nil {
 			es = append(es, e)
