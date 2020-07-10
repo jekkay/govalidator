@@ -35,6 +35,14 @@ func (c *constraintInt) reset() {
 }
 
 func (c *constraintInt) validate(value *reflect.Value, fix bool) error {
+	for value.Kind() == reflect.Ptr {
+		if value.IsNil() {
+			return nil
+		}
+		e := value.Elem()
+		value = &e
+	}
+
 	v := value.Int()
 	name := c.fi.Name
 	if c.minFlag == set_yes && v < c.minInt {
