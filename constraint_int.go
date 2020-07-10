@@ -65,7 +65,8 @@ func describeInt(fi *reflect.StructField) (constraint, []error) {
 	c := new(constraintInt)
 	c.reset()
 	es := make([]error, 0, 0)
-	c.k = fi.Type.Kind()
+	//c.k =  fi.Type.Kind()
+	c.k = getLastKind(fi.Type)
 	if minV := fi.Tag.Get(flagMin); len(minV) > 0 {
 		if v, e := strconv.ParseInt(minV, 10, 64); e != nil {
 			es = append(es, e)
@@ -116,21 +117,39 @@ func postCheckConstraintInt(c *constraintInt, fi *reflect.StructField) []error {
 		}
 	}
 
-	if c.maxFlag == set_yes {
+	if c.minFlag == set_yes && c.maxFlag == set_yes {
+		if c.minInt > c.maxInt {
+			es = append(es, errors.New(fmt.Sprintf("`%s` minimum value %d is greater than maximum value %d",
+				name, c.minInt, c.maxInt)))
+			c.maxInt = c.minInt
+		}
+	}
+
+	if c.defaultFlag == set_yes {
 		if e := checkInRangeInt(name, flagDefault, c.defaultInt, r); e != nil {
 			es = append(es, e)
 			c.defaultInt = 0
 		}
+		if c.minFlag == set_yes && c.defaultInt < c.minInt {
+			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %d, should at least %d",
+				name, c.defaultInt, c.minInt)))
+			c.defaultInt = c.minInt
+		} else if c.maxFlag == set_yes && c.defaultInt > c.maxInt {
+			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %d, shold at most %d",
+				name, c.defaultInt, c.maxInt)))
+			c.defaultInt = c.maxInt
+		}
 	}
+
 	return es
 }
 
 func checkInRangeInt(name string, flag string, v int64, r *rangeInt) error {
 	if v < r.min {
-		return errors.New(fmt.Sprintf("`%s#%s` minimum value is %d, should at least %d", name, flag, v, r.min))
+		return errors.New(fmt.Sprintf("`%s#%s` value is %d, should at least %d", name, flag, v, r.min))
 	}
 	if v > r.max {
-		return errors.New(fmt.Sprintf("`%s#%s` maximum value is %d, should at most %d", name, flag, v, r.max))
+		return errors.New(fmt.Sprintf("`%s#%s` value is %d, should at most %d", name, flag, v, r.max))
 	}
 	return nil
 }
