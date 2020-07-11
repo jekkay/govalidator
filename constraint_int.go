@@ -76,6 +76,9 @@ func describeInt(fi *reflect.StructField) (constraint, []error) {
 	es := make([]error, 0, 0)
 	//c.k =  fi.Type.Kind()
 	c.k = getLastKind(fi.Type)
+	if _rangeIntMap[c.k] == nil {
+		return nil, []error{errors.New(fmt.Sprintf("`%s` type is %v, required signed number type", fi.Name, c.k))}
+	}
 	c.fi = fi
 	if minV := fi.Tag.Get(flagMin); len(minV) > 0 {
 		if v, e := strconv.ParseInt(minV, 10, 64); e != nil {
@@ -149,6 +152,9 @@ func postCheckConstraintInt(c *constraintInt, fi *reflect.StructField) []error {
 				name, c.defaultInt, c.maxInt)))
 			c.defaultInt = c.maxInt
 		}
+	}
+	if e := checkFirstLetter(fi, c); e != nil {
+		es = append(es, e)
 	}
 
 	return es

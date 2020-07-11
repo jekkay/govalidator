@@ -40,3 +40,31 @@ func TestFiledTag_describe(t *testing.T) {
 		t.Errorf("fail to auto fix filed Score")
 	}
 }
+
+func TestDescribe_invalidType(t *testing.T) {
+	type sa struct {
+		Age uint16 `min:"10" max:"20" default:"15"`
+	}
+	a := &sa{Age: 50}
+	v := reflect.ValueOf(a).Elem()
+	fi := v.Type().Field(0)
+	if _, er := describeInt(&fi); er != nil {
+		fmt.Printf("%v", er)
+	} else {
+		t.Errorf("fail to find type unmatch error")
+	}
+}
+
+func TestDescribe_invalidVariable(t *testing.T) {
+	type sa struct {
+		age int16 `min:"10" max:"20" default:"15"`
+	}
+	a := &sa{age: 50}
+	v := reflect.ValueOf(a).Elem()
+	fi := v.Type().Field(0)
+	if _, er := describeInt(&fi); er != nil {
+		fmt.Printf("%v", er)
+	} else {
+		t.Errorf("fail to find variable error")
+	}
+}
