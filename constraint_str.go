@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 type constraintString struct {
@@ -106,7 +107,18 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 	}
 	if in := fi.Tag.Get(flagIn); len(in) > 0 {
 		c.inFlag = set_yes
-		c.in = splitInOptions(in)
+		c.in = stripEmptyString(splitInOptions(in))
+	}
+	if req := fi.Tag.Get(flagReq); len(req) > 0 {
+		c.requireFlag = set_yes
+		if req == "true" {
+			c.require = true
+		} else if req == "false" {
+			c.require = false
+		} else {
+			c.require = false
+			es = append(es, errors.New(fmt.Sprintf("`%s#req` value is invalid '%s', should be 'true' or 'false'", fi.Name, req)))
+		}
 	}
 	if regex := fi.Tag.Get(flagRegEx); len(regex) > 0 {
 		c.RegEx = regex
@@ -119,7 +131,27 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 }
 
 func splitInOptions(in string) []string {
-	return nil
+	if len(in) <= 0 {
+		return nil
+	}
+	// check the first character whether is '#'
+	if in[0] == '#' {
+		return strings.Split(in, "#")
+	}
+	return strings.Split(in, " ")
+}
+
+func stripEmptyString(ss []string) []string {
+	if len(ss) <= 0 {
+		return nil
+	}
+	r := make([]string, 0)
+	for _, s := range ss {
+		if len(s) > 0 {
+			r = append(r, s)
+		}
+	}
+	return r
 }
 
 func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []error {
