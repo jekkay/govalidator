@@ -17,11 +17,11 @@ type constraintUint struct {
 	fi *reflect.StructField
 
 	minFlag     flagSet
-	minUint      uint64
+	minUint     uint64
 	maxFlag     flagSet
-	maxUint      uint64
+	maxUint     uint64
 	defaultFlag flagSet
-	defaultUint  uint64
+	defaultUint uint64
 }
 
 func (c *constraintUint) reset() {
@@ -173,9 +173,9 @@ func checkInRangeUint(name string, flag string, v uint64, r *rangeUint) error {
 var _rangeUintMap = make(map[reflect.Kind]*rangeUint)
 
 func init() {
-	_rangeUintMap[reflect.Uint8] = &rangeUint{min: 0, max: 256}
-	_rangeUintMap[reflect.Uint16] = &rangeUint{min: 0, max: 65536}
-	_rangeUintMap[reflect.Uint32] = &rangeUint{min: 0, max: 4294967296}
-	_rangeUintMap[reflect.Uint] = &rangeUint{min: 0, max: 4294967296}
+	_rangeUintMap[reflect.Uint8] = &rangeUint{min: 0, max: 255}
+	_rangeUintMap[reflect.Uint16] = &rangeUint{min: 0, max: 65535}
+	_rangeUintMap[reflect.Uint32] = &rangeUint{min: 0, max: 4294967295}
+	_rangeUintMap[reflect.Uint] = &rangeUint{min: 0, max: 4294967295}
 	_rangeUintMap[reflect.Uint64] = &rangeUint{min: 0, max: 18446744073709551615}
 }
