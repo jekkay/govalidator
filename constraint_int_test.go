@@ -48,7 +48,7 @@ func TestDescribe_invalidType(t *testing.T) {
 	a := &sa{Age: 50}
 	v := reflect.ValueOf(a).Elem()
 	fi := v.Type().Field(0)
-	if _, er := describeInt(&fi); er != nil {
+	if _, er := describeInt(&fi); len(er) > 0 {
 		fmt.Printf("%v", er)
 	} else {
 		t.Errorf("fail to find type unmatch error")
@@ -62,7 +62,7 @@ func TestDescribe_invalidVariable(t *testing.T) {
 	a := &sa{age: 50}
 	v := reflect.ValueOf(a).Elem()
 	fi := v.Type().Field(0)
-	if _, er := describeInt(&fi); er != nil {
+	if _, er := describeInt(&fi); len(er) > 0 {
 		fmt.Printf("%v", er)
 	} else {
 		t.Errorf("fail to find variable error")

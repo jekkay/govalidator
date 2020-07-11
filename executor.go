@@ -124,4 +124,11 @@ func init() {
 	constraintMap[reflect.Int16] = describeInt
 	constraintMap[reflect.Int32] = describeInt
 	constraintMap[reflect.Int64] = describeInt
+
+	constraintMap[reflect.Uint] = describeUint
+	constraintMap[reflect.Uint8] = describeUint
+	constraintMap[reflect.Uint16] = describeUint
+	constraintMap[reflect.Uint32] = describeUint
+	constraintMap[reflect.Uint64] = describeUint
+
 }
