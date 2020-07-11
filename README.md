@@ -114,8 +114,8 @@ it's available for the nested struct as well, see test file for more: [validator
 
 | Field Type | min | max | default | precision|
 |-------|-------|-------|-------|-------|
-| Float32 | ±1.18×10^38 | ±3.4×10^38 | 0 | 7 |
-| Float64 | ±2.23×10^308 | ±1.80×10^308	 | 0 | 16 |
+| Float32 | -3.4e38 | 3.4e38 | 0 | 7 |
+| Float64 | -1.7e308 | 1.7e308	 | 0 | 16 |
 
 | Field Type | min | max | default | req|
 |-------|-------|-------|-------|-------|
