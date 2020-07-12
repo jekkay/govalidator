@@ -26,11 +26,11 @@ type constraintFloat struct {
 
 func (c *constraintFloat) reset() {
 	c.k = reflect.Invalid
-	c.minFlag = set_no
+	c.minFlag = setNo
 	c.minFloat = 0
-	c.maxFlag = set_no
+	c.maxFlag = setNo
 	c.maxFloat = 0
-	c.defaultFlag = set_no
+	c.defaultFlag = setNo
 	c.defaultFloat = 0
 }
 
@@ -45,7 +45,7 @@ func (c *constraintFloat) validate(value *reflect.Value, fix bool) error {
 
 	v := value.Float()
 	name := c.fi.Name
-	if c.minFlag == set_yes && greaterFloat64Than(c.minFloat, v) {
+	if c.minFlag == setYes && greaterFloat64Than(c.minFloat, v) {
 		if fix && value.CanSet() {
 			if isZeroFloat64(v) {
 				value.SetFloat(c.defaultFloat)
@@ -56,7 +56,7 @@ func (c *constraintFloat) validate(value *reflect.Value, fix bool) error {
 		return errors.New(fmt.Sprintf("`%s` at leas %.5f, current is %.5f", name, c.minFloat, v))
 	}
 
-	if c.maxFlag == set_yes && greaterFloat64Than(v, c.maxFloat) {
+	if c.maxFlag == setYes && greaterFloat64Than(v, c.maxFloat) {
 		if fix && value.CanSet() {
 			value.SetFloat(c.maxFloat)
 		}
@@ -67,7 +67,7 @@ func (c *constraintFloat) validate(value *reflect.Value, fix bool) error {
 }
 
 func (c *constraintFloat) isSet() bool {
-	return c.minFlag == set_yes || c.maxFlag == set_yes || c.defaultFlag == set_yes
+	return c.minFlag == setYes || c.maxFlag == setYes || c.defaultFlag == setYes
 }
 
 func describeFloat(fi *reflect.StructField) (constraint, []error) {
@@ -85,7 +85,7 @@ func describeFloat(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.minFloat = v
-			c.minFlag = set_yes
+			c.minFlag = setYes
 		}
 	}
 	if maxV := fi.Tag.Get(flagMax); len(maxV) > 0 {
@@ -93,7 +93,7 @@ func describeFloat(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.maxFloat = v
-			c.maxFlag = set_yes
+			c.maxFlag = setYes
 		}
 	}
 	if defaultV := fi.Tag.Get(flagDefault); len(defaultV) > 0 {
@@ -101,7 +101,7 @@ func describeFloat(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.defaultFloat = v
-			c.defaultFlag = set_yes
+			c.defaultFlag = setYes
 		}
 	}
 	if es2 := postCheckConstraintFloat(c, fi); es2 != nil && len(es2) > 0 {
@@ -117,20 +117,20 @@ func postCheckConstraintFloat(c *constraintFloat, fi *reflect.StructField) []err
 		return nil
 	}
 	es := make([]error, 0, 0)
-	if c.minFlag == set_yes {
+	if c.minFlag == setYes {
 		if e := checkInRangeFloat(name, flagMin, c.minFloat, r); e != nil {
 			es = append(es, e)
 			c.minFloat = r.min
 		}
 	}
-	if c.maxFlag == set_yes {
+	if c.maxFlag == setYes {
 		if e := checkInRangeFloat(name, flagMax, c.maxFloat, r); e != nil {
 			es = append(es, e)
 			c.maxFloat = r.max
 		}
 	}
 
-	if c.minFlag == set_yes && c.maxFlag == set_yes {
+	if c.minFlag == setYes && c.maxFlag == setYes {
 		if greaterFloat64Than(c.minFloat, c.maxFloat) {
 			es = append(es, errors.New(fmt.Sprintf("`%s` minimum value %.5f is greater than maximum value %.5f",
 				name, c.minFloat, c.maxFloat)))
@@ -138,16 +138,16 @@ func postCheckConstraintFloat(c *constraintFloat, fi *reflect.StructField) []err
 		}
 	}
 
-	if c.defaultFlag == set_yes {
+	if c.defaultFlag == setYes {
 		if e := checkInRangeFloat(name, flagDefault, c.defaultFloat, r); e != nil {
 			es = append(es, e)
 			c.defaultFloat = 0
 		}
-		if c.minFlag == set_yes && greaterFloat64Than(c.minFloat, c.defaultFloat) {
+		if c.minFlag == setYes && greaterFloat64Than(c.minFloat, c.defaultFloat) {
 			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %.5f, should at least %.5f",
 				name, c.defaultFloat, c.minFloat)))
 			c.defaultFloat = c.minFloat
-		} else if c.maxFlag == set_yes && greaterFloat64Than(c.defaultFloat, c.maxFloat) {
+		} else if c.maxFlag == setYes && greaterFloat64Than(c.defaultFloat, c.maxFloat) {
 			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %.5f, shold at most %.5f",
 				name, c.defaultFloat, c.maxFloat)))
 			c.defaultFloat = c.maxFloat

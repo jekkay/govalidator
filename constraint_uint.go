@@ -26,11 +26,11 @@ type constraintUint struct {
 
 func (c *constraintUint) reset() {
 	c.k = reflect.Invalid
-	c.minFlag = set_no
+	c.minFlag = setNo
 	c.minUint = 0
-	c.maxFlag = set_no
+	c.maxFlag = setNo
 	c.maxUint = 0
-	c.defaultFlag = set_no
+	c.defaultFlag = setNo
 	c.defaultUint = 0
 }
 
@@ -45,7 +45,7 @@ func (c *constraintUint) validate(value *reflect.Value, fix bool) error {
 
 	v := value.Uint()
 	name := c.fi.Name
-	if c.minFlag == set_yes && v < c.minUint {
+	if c.minFlag == setYes && v < c.minUint {
 		if fix && value.CanSet() {
 			if v == 0 {
 				value.SetUint(c.defaultUint)
@@ -56,7 +56,7 @@ func (c *constraintUint) validate(value *reflect.Value, fix bool) error {
 		return errors.New(fmt.Sprintf("`%s` at least %d, current is %d", name, c.minUint, v))
 	}
 
-	if c.maxFlag == set_yes && v > c.maxUint {
+	if c.maxFlag == setYes && v > c.maxUint {
 		if fix && value.CanSet() {
 			value.SetUint(c.maxUint)
 		}
@@ -67,7 +67,7 @@ func (c *constraintUint) validate(value *reflect.Value, fix bool) error {
 }
 
 func (c *constraintUint) isSet() bool {
-	return c.minFlag == set_yes || c.maxFlag == set_yes || c.defaultFlag == set_yes
+	return c.minFlag == setYes || c.maxFlag == setYes || c.defaultFlag == setYes
 }
 
 func describeUint(fi *reflect.StructField) (constraint, []error) {
@@ -85,7 +85,7 @@ func describeUint(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.minUint = v
-			c.minFlag = set_yes
+			c.minFlag = setYes
 		}
 	}
 	if maxV := fi.Tag.Get(flagMax); len(maxV) > 0 {
@@ -93,7 +93,7 @@ func describeUint(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.maxUint = v
-			c.maxFlag = set_yes
+			c.maxFlag = setYes
 		}
 	}
 	if defaultV := fi.Tag.Get(flagDefault); len(defaultV) > 0 {
@@ -101,7 +101,7 @@ func describeUint(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.defaultUint = v
-			c.defaultFlag = set_yes
+			c.defaultFlag = setYes
 		}
 	}
 	if es2 := postCheckConstraintUint(c, fi); es2 != nil && len(es2) > 0 {
@@ -117,20 +117,20 @@ func postCheckConstraintUint(c *constraintUint, fi *reflect.StructField) []error
 		return nil
 	}
 	es := make([]error, 0, 0)
-	if c.minFlag == set_yes {
+	if c.minFlag == setYes {
 		if e := checkInRangeUint(name, flagMin, c.minUint, r); e != nil {
 			es = append(es, e)
 			c.minUint = r.min
 		}
 	}
-	if c.maxFlag == set_yes {
+	if c.maxFlag == setYes {
 		if e := checkInRangeUint(name, flagMax, c.maxUint, r); e != nil {
 			es = append(es, e)
 			c.maxUint = r.max
 		}
 	}
 
-	if c.minFlag == set_yes && c.maxFlag == set_yes {
+	if c.minFlag == setYes && c.maxFlag == setYes {
 		if c.minUint > c.maxUint {
 			es = append(es, errors.New(fmt.Sprintf("`%s` minimum value %d is greater than maximum value %d",
 				name, c.minUint, c.maxUint)))
@@ -138,16 +138,16 @@ func postCheckConstraintUint(c *constraintUint, fi *reflect.StructField) []error
 		}
 	}
 
-	if c.defaultFlag == set_yes {
+	if c.defaultFlag == setYes {
 		if e := checkInRangeUint(name, flagDefault, c.defaultUint, r); e != nil {
 			es = append(es, e)
 			c.defaultUint = 0
 		}
-		if c.minFlag == set_yes && c.defaultUint < c.minUint {
+		if c.minFlag == setYes && c.defaultUint < c.minUint {
 			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %d, should at least %d",
 				name, c.defaultUint, c.minUint)))
 			c.defaultUint = c.minUint
-		} else if c.maxFlag == set_yes && c.defaultUint > c.maxUint {
+		} else if c.maxFlag == setYes && c.defaultUint > c.maxUint {
 			es = append(es, errors.New(fmt.Sprintf("`%s#default` value is %d, shold at most %d",
 				name, c.defaultUint, c.maxUint)))
 			c.defaultUint = c.maxUint

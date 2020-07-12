@@ -3,9 +3,8 @@ package govalidator
 type flagSet int
 
 const (
-	set_no      flagSet = iota
-	set_yes     flagSet = iota
-	set_default flagSet = iota
+	setNo  flagSet = iota
+	setYes flagSet = iota
 )
 
 const (
@@ -17,7 +16,7 @@ const (
 	flagRegEx   = "regex"   // regular expression
 )
 
-// string option list separation placeholder
+// string option list separator placeholder
 const (
 	strSep1 = "#"
 	strSep2 = ","

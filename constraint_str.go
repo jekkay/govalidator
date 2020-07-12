@@ -30,17 +30,17 @@ type constraintString struct {
 
 func (c *constraintString) reset() {
 	c.k = reflect.Invalid
-	c.minFlag = set_no
+	c.minFlag = setNo
 	c.minLen = 0
-	c.maxFlag = set_no
+	c.maxFlag = setNo
 	c.maxLen = 0
-	c.defaultFlag = set_no
+	c.defaultFlag = setNo
 	c.defaultStr = ""
-	c.requireFlag = set_no
+	c.requireFlag = setNo
 	c.require = false
-	c.inFlag = set_no
+	c.inFlag = setNo
 	c.in = nil
-	c.RegExFlag = set_no
+	c.RegExFlag = setNo
 	c.RegEx = ""
 	c.RegExCompile = nil
 }
@@ -58,38 +58,38 @@ func (c *constraintString) validate(value *reflect.Value, fix bool) error {
 	l := len(v)
 	name := c.fi.Name
 	// string length check
-	if c.minFlag == set_yes && l < c.minLen {
+	if c.minFlag == setYes && l < c.minLen {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
 		return errors.New(fmt.Sprintf("`%s` at least length %d, current length is %d, %s", name, c.minLen, l, v))
 	}
 
-	if c.maxFlag == set_yes && l > c.maxLen {
+	if c.maxFlag == setYes && l > c.maxLen {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
 		return errors.New(fmt.Sprintf("`%s` at most length %d, current length is %d, %s", name, c.maxLen, l, v))
 	}
 	// require
-	if c.requireFlag == set_yes && l == 0 {
+	if c.requireFlag == setYes && l == 0 {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
 		return errors.New(fmt.Sprintf("`%s` is empty", name))
-	} else if c.requireFlag == set_no && l == 0 {
+	} else if c.requireFlag == setNo && l == 0 {
 		// empty string
 		return nil
 	}
 	// in options
-	if c.inFlag == set_yes && !inSlice(c.in, v) {
+	if c.inFlag == setYes && !inSlice(c.in, v) {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
 		return errors.New(fmt.Sprintf("`%s` value '%s' is not valid, should be in options", name, v))
 	}
 	// regex
-	if c.RegExFlag == set_yes && len(c.RegExCompile.FindString(v)) == 0 {
+	if c.RegExFlag == setYes && len(c.RegExCompile.FindString(v)) == 0 {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
@@ -100,8 +100,8 @@ func (c *constraintString) validate(value *reflect.Value, fix bool) error {
 }
 
 func (c *constraintString) isSet() bool {
-	return c.minFlag == set_yes || c.maxFlag == set_yes || c.defaultFlag == set_yes ||
-		c.requireFlag == set_yes || c.RegExFlag == set_yes || c.inFlag == set_yes
+	return c.minFlag == setYes || c.maxFlag == setYes || c.defaultFlag == setYes ||
+		c.requireFlag == setYes || c.RegExFlag == setYes || c.inFlag == setYes
 }
 
 func describeString(fi *reflect.StructField) (constraint, []error) {
@@ -119,7 +119,7 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.minLen = int(v)
-			c.minFlag = set_yes
+			c.minFlag = setYes
 		}
 	}
 	if maxV := fi.Tag.Get(flagMax); len(maxV) > 0 {
@@ -127,19 +127,19 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 			es = append(es, e)
 		} else {
 			c.maxLen = int(v)
-			c.maxFlag = set_yes
+			c.maxFlag = setYes
 		}
 	}
 	if defaultV := fi.Tag.Get(flagDefault); len(defaultV) > 0 {
 		c.defaultStr = defaultV
-		c.defaultFlag = set_yes
+		c.defaultFlag = setYes
 	}
 	if in := fi.Tag.Get(flagIn); len(in) > 0 {
-		c.inFlag = set_yes
+		c.inFlag = setYes
 		c.in = stripEmptyString(splitInOptions(in))
 	}
 	if req := fi.Tag.Get(flagReq); len(req) > 0 {
-		c.requireFlag = set_yes
+		c.requireFlag = setYes
 		if req == "true" {
 			c.require = true
 		} else if req == "false" {
@@ -151,7 +151,7 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 	}
 	if regex := fi.Tag.Get(flagRegEx); len(regex) > 0 {
 		c.RegEx = regex
-		c.RegExFlag = set_yes
+		c.RegExFlag = setYes
 	}
 	if es2 := postCheckConstraintString(c, fi); es2 != nil && len(es2) > 0 {
 		es = append(es, es2...)
@@ -190,7 +190,7 @@ func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []e
 	name := fi.Name
 	es := make([]error, 0, 0)
 
-	if c.minFlag == set_yes && c.maxFlag == set_yes {
+	if c.minFlag == setYes && c.maxFlag == setYes {
 		if c.minLen > c.maxLen {
 			es = append(es, errors.New(fmt.Sprintf("`%s` minimum length %d is greater than maximum length %d",
 				name, c.minLen, c.maxLen)))
@@ -201,10 +201,10 @@ func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []e
 		es = append(es, e)
 	}
 	// regular expression compile
-	if c.RegExFlag == set_yes {
+	if c.RegExFlag == setYes {
 		if r, e := regexp.Compile(c.RegEx); e != nil {
 			es = append(es, e)
-			c.RegExFlag = set_no
+			c.RegExFlag = setNo
 		} else {
 			c.RegExCompile = r
 		}
