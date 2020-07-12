@@ -68,3 +68,15 @@ func greaterFloat64Than(f1 float64, f2 float64) bool {
 func equalFloat64(f1 float64, f2 float64) bool {
 	return !greaterFloat64Than(f1, f2) && !greaterFloat64Than(f2, f1)
 }
+
+func inSlice(ss []string, s string) bool {
+	if len(ss) <= 0 {
+		return false
+	}
+	for _, v := range ss {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
