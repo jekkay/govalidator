@@ -73,7 +73,7 @@ func (c *constraintInt) isSet() bool {
 func describeInt(fi *reflect.StructField) (constraint, []error) {
 	c := new(constraintInt)
 	c.reset()
-	es := make([]error, 0, 0)
+	es := make([]error, 0)
 	//c.k =  fi.Type.Kind()
 	c.k = getLastKind(fi.Type)
 	if _rangeIntMap[c.k] == nil {
