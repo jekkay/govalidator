@@ -164,10 +164,10 @@ func splitInOptions(in string) []string {
 		return nil
 	}
 	// check the first character whether is '#'
-	if in[0] == '#' {
-		return strings.Split(in, "#")
+	if in[0] == strSep1[0] {
+		return strings.Split(in, strSep1)
 	}
-	return strings.Split(in, " ")
+	return strings.Split(in, strSep2)
 }
 
 func stripEmptyString(ss []string) []string {
@@ -184,11 +184,10 @@ func stripEmptyString(ss []string) []string {
 }
 
 func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []error {
-	name := fi.Name
-	r := _rangeIntMap[c.k]
-	if r == nil {
+	if !c.isSet() {
 		return nil
 	}
+	name := fi.Name
 	es := make([]error, 0, 0)
 
 	if c.minFlag == set_yes && c.maxFlag == set_yes {

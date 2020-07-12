@@ -17,3 +17,8 @@ const (
 	flagRegEx   = "regex"   // regular expression
 )
 
+// string option list separation placeholder
+const (
+	strSep1 = "#"
+	strSep2 = ","
+)
