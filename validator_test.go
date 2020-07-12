@@ -1,6 +1,7 @@
 package govalidator
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -19,14 +20,14 @@ func TestValidator_Validate(t *testing.T) {
 		fmt.Println(e)
 	}
 
-	if a.Age != 50 || a.Year != 0 || *a.Score != 40 ||a.Location != "CN" || *a.Name != "jekkay"{
+	if a.Age != 50 || a.Year != 0 || *a.Score != 40 || a.Location != "CN" || *a.Name != "jekkay" {
 		t.Error("fail to adjust values")
 	}
 }
 
 func TestValidator_Validates(t *testing.T) {
 	type A struct {
-		Age int8 `min:"-100" max:"3000" default:"10"`
+		Age  int8  `min:"-100" max:"3000" default:"10"`
 		Year int16 `min:"0" max:"100000" default:"20"`
 	}
 	a := &A{}
@@ -42,4 +43,23 @@ func TestValidator_Validates(t *testing.T) {
 	} else {
 		t.Error("Validates: fail to find errors")
 	}
+}
+
+func TestValidObject2(t *testing.T) {
+	type Range struct {
+		A int32   `json:"a" min:"10" max:"100" default:"50"`
+		B int32   `json:"b" min:"20" max:"90" default:"80"`
+		C *uint64 `json:"c" min:"30" max:"90" req:"true" default:"60"`
+	}
+
+	r := new(Range)
+	r.A = 120
+	r.B = 130
+
+	if e := ValidObject(r, false); e != nil {
+		fmt.Println(e)
+	}
+	ValidObject(r, true)
+	bs, _ := json.MarshalIndent(r, "", "  ")
+	fmt.Println(string(bs))
 }

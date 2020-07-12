@@ -17,14 +17,13 @@ import (
 type Range struct {
 	A int32   `json:"a" min:"10" max:"100" default:"50"`
 	B int32   `json:"b" min:"20" max:"90" default:"80"`
-	C *uint64 `json:"c" min:"30" max:"90" default:"60"`
+	C *uint64 `json:"c" min:"30" max:"90" req:"true" default:"60"`
 }
 
 func TestValidObject2(t *testing.T) {
 	r := new(Range)
 	r.A = 120
 	r.B = 130
-	r.C = new(uint64)
 	*r.C = 0
 
 	if e := govalidator.ValidObject(r, false); e != nil {
@@ -38,7 +37,7 @@ func TestValidObject2(t *testing.T) {
 
 output is 
 ```
-A Maximum value is 100，current is 120
+[`A` at most 100, current is 120 `B` at most 90, current is 130]
 {
   "a": 100,
   "b": 90,
@@ -88,6 +87,18 @@ it's available for the nested struct as well, see test file for more: [validator
 
 <p>Tags are used to describe the constraint of the field.</p>
 
+
+| Tag | description | require |
+|------|------|------|
+| default | default value | √ | 
+| min | the minimum length of the string,<br/> or the minimum value of number | × |
+| max | the maximum length of the string ,<br/> or the maximum value of number| × |
+| req | require value | × |
+| regex | regular expression | × |
+| in | value options | × |
+
+<p>Number Range Constraint:</p>
+
 | Tag | Field Type |description |
 |------|------|------|
 | min | Int, Int8,Int16,Int32,Int64<br/>Uint,Uint8,Uint16,Uint32,Uint64| minimum value |
@@ -117,21 +128,19 @@ it's available for the nested struct as well, see test file for more: [validator
 | Float32 | -3.4e38 | 3.4e38 | 0 | 7 |
 | Float64 | -1.7e308 | 1.7e308	 | 0 | 16 |
 
-| Field Type | min | max | default | req|
-|-------|-------|-------|-------|-------|
-| Ptr | - | - | nil | defalut value: false |
 
-| Tag | description | require |
-|------|------|------|
-| default | default value | √ | 
-| min | the minimum length of the string | × |
-| max | the maximum length of the string | × |
-| req | require value | × |
-| regex | regular expression | × |
-| in | value options | × |
+<p> Tags decorate description:</p>
 
-## TO BE CONTINUED
+| Field Type | min | max | default | req | in | regex |
+|-------|-------|-------|-------|-------|-------|-------|
+| (number)<br/>Int8,Uint8,<br/>Int16,Uint16<br/>...<br/>Int64,Uint64| √ | √ | √ | × |× |× |
+| string | √ | √ | √ |  √ | √ | √ |
+| ptr -> number |√ | √ | √ | √ |× |× |
+| ptr -> string | √ | √ | √ |  √ | √ | √ |
+| ptr -> struct |× |× |× |√ |× |× |
 
 ## Author
- - Jekkay Hu, Blog: [http://www.eassyb.cn](http://www.eassyb.cn)
+ - Jekkay Hu
+ - Blog: [http://www.eassyb.cn](http://www.eassyb.cn)
+ - Email: jekkay#qqvips.cn
  
