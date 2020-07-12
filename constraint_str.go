@@ -57,6 +57,17 @@ func (c *constraintString) validate(value *reflect.Value, fix bool) error {
 	v := value.String()
 	l := len(v)
 	name := c.fi.Name
+	// check empty string
+	// require
+	if c.requireFlag == setYes && l == 0 {
+		if fix && value.CanSet() {
+			value.SetString(c.defaultStr)
+		}
+		return errors.New(fmt.Sprintf("`%s` is empty", name))
+	} else if c.requireFlag == setNo && l == 0 {
+		// empty string
+		return nil
+	}
 	// string length check
 	if c.minFlag == setYes && l < c.minLen {
 		if fix && value.CanSet() {
@@ -71,22 +82,12 @@ func (c *constraintString) validate(value *reflect.Value, fix bool) error {
 		}
 		return errors.New(fmt.Sprintf("`%s` at most length %d, current length is %d, %s", name, c.maxLen, l, v))
 	}
-	// require
-	if c.requireFlag == setYes && l == 0 {
-		if fix && value.CanSet() {
-			value.SetString(c.defaultStr)
-		}
-		return errors.New(fmt.Sprintf("`%s` is empty", name))
-	} else if c.requireFlag == setNo && l == 0 {
-		// empty string
-		return nil
-	}
 	// in options
 	if c.inFlag == setYes && !inSlice(c.in, v) {
 		if fix && value.CanSet() {
 			value.SetString(c.defaultStr)
 		}
-		return errors.New(fmt.Sprintf("`%s` value '%s' is not valid, should be in options", name, v))
+		return errors.New(fmt.Sprintf("`%s` value '%s' is not valid, should be in options:%v", name, v, c.in))
 	}
 	// regex
 	if c.RegExFlag == setYes && len(c.RegExCompile.FindString(v)) == 0 {
@@ -110,9 +111,6 @@ func describeString(fi *reflect.StructField) (constraint, []error) {
 	es := make([]error, 0, 0)
 	//c.k =  fi.Type.Kind()
 	c.k = getLastKind(fi.Type)
-	if _rangeIntMap[c.k] == nil {
-		return nil, []error{errors.New(fmt.Sprintf("`%s` type is %v, required signed number type", fi.Name, c.k))}
-	}
 	c.fi = fi
 	if minV := fi.Tag.Get(flagMin); len(minV) > 0 {
 		if v, e := strconv.ParseInt(minV, 10, 32); e != nil {
