@@ -50,6 +50,7 @@ func TestValidObject2(t *testing.T) {
 		A int32   `json:"a" min:"10" max:"100" default:"50"`
 		B int32   `json:"b" min:"20" max:"90" default:"80"`
 		C *uint64 `json:"c" min:"30" max:"90" req:"true" default:"60"`
+		D string  `json:"d" min:"1" max:"10" req:"true" in:"hello,world,jekkay" regex:"^[a-d]+$" default:"jekkay"`
 	}
 
 	r := new(Range)

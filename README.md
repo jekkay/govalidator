@@ -23,16 +23,16 @@ import (
 }
 
 type Range struct {
-	A int32   `json:"a" min:"10" max:"100" default:"50"`
-	B int32   `json:"b" min:"20" max:"90" default:"80"`
-	C *uint64 `json:"c" min:"30" max:"90" req:"true" default:"60"`
+    A int32   `json:"a" min:"10" max:"100" default:"50"`
+    B int32   `json:"b" min:"20" max:"90" default:"80"`
+    C *uint64 `json:"c" min:"30" max:"90" req:"true" default:"60"`
+    D string  `json:"d" min:"1" max:"10" req:"true" in:"hello,world,jekkay" regex:"^[a-d]+$" default:"jekkay"`
 }
 
 func TestValidObject2(t *testing.T) {
 	r := new(Range)
 	r.A = 120
 	r.B = 130
-	*r.C = 0
 
 	if e := govalidator.ValidObject(r, false); e != nil {
 		fmt.Println(e)
@@ -45,11 +45,16 @@ func TestValidObject2(t *testing.T) {
 
 output is 
 ```
-[`A` at most 100, current is 120 `B` at most 90, current is 130]
+[
+`A` at most 100, current is 120
+`B` at most 90, current is 130 
+`D` is empty
+]
 {
   "a": 100,
   "b": 90,
-  "c": 60
+  "c": 60,
+  "d": "jekkay"
 }
 ```
 
@@ -63,17 +68,18 @@ it's available for the nested struct as well, see test file for more: [validator
 
 ## Function
 
-| function | parameters | 
-|--------|--------|
-| ValidObject | <code>obj</code>:ptr, a pointer to struct object<br/><code>fix</code>: boolean, indicate whether auto adjust value<br/>|
+| function | parameters | description |
+|--------|--------|--------|
+| ValidObject | <code>obj</code>:ptr, a pointer to struct object<br/><code>fix</code>: boolean, indicate whether auto adjust value<br/>| auto fix error value|
+| Validate | <code>obj</code>:ptr, a pointer to struct object<br/>| validate object error, return the first one |
+| Validates | <code>obj</code>:ptr, a pointer to struct object<br/>|  validate object error, return all errors |
 
 ## Auto Fix Value
 
 
-
 <p>Set parameter `fix` to <code>true</code>, <code>ValidObject</code>function will do some adjustment.</p>
 
- - if the filed is number(<code>int</code>, <code>uint</code>...), logic is like this:
+ - if the filed is number(<code>int</code>, <code>uint</code>...), logic like this:
 
 ```
    if currentValue < min {
@@ -88,10 +94,30 @@ it's available for the nested struct as well, see test file for more: [validator
    }
      
 ``` 
+<p>if there is no <code>default</code> tag set, <code>min</code> will be used as default value instead. </p>
+ 
+ - if the field is string(<code>string</code>), logic like this
 
-<p>if there is no <code>defalut</code> tag set, <code>min</code> will be used as default value instead. </p>
+```
+  if len(str) < min || len(str) > max 
+       || dismatch(str, regex) || !in(str, options) {
+      str = default
+  }
+```
 
-## Tag
+ - if the field is pointer, logic like this:
+ 
+```
+  if ptr == nil && required{
+    ptr = new(type)
+  }
+  if ptr != nil {
+     check(*ptr) --> logic go above
+  }
+
+```
+
+## Tags
 
 <p>Tags are used to describe the constraint of the field.</p>
 
