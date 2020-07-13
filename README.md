@@ -8,7 +8,7 @@
 recovery from error. It's very easy to find errors exist during run-time. But if we wanna our process 
  is to be sure running in safe mode to keep our service is perfect available, it definitely require
  self-recovery ability, especially when wrong setting or arguments can be delivered
- by user, other programs.
+ by user, or other programs...
  </p>
 
 ## quick start
