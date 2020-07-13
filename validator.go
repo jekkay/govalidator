@@ -87,9 +87,13 @@ func (r *Validator) checkFieldValue(fi *reflect.StructField, value *reflect.Valu
 			}
 		}
 		if v2.Kind() == reflect.Struct {
-			return r.doValidObject(&v2, fix, quick)
+			if e3 := r.doValidObject(&v2, fix, quick); len(e3) > 0 {
+				es = append(es, e3...)
+			}
+		} else if e3 := r.checkFieldValue(fi, &v2, fix, quick); len(e3) > 0 {
+			es = append(es, e3...)
 		}
-		return r.checkFieldValue(fi, &v2, fix, quick)
+		return es
 	case reflect.Struct:
 		return r.doValidObject(value, fix, quick)
 	default:

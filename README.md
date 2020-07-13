@@ -48,6 +48,7 @@ output is
 [
 `A` at most 100, current is 120
 `B` at most 90, current is 130 
+`C` is empty
 `D` is empty
 ]
 {
