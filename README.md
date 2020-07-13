@@ -175,6 +175,6 @@ it's available for the nested struct as well, see test file for more: [validator
 
 ## Author
  - Jekkay Hu
- - Blog: [http://www.eassyb.cn](http://www.eassyb.cn)
+ - Blog: [http://www.easysb.cn](http://www.easysb.cn)
  - Email: jekkay#qqvips.cn
  
