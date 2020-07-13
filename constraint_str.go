@@ -108,7 +108,7 @@ func (c *constraintString) isSet() bool {
 func describeString(fi *reflect.StructField) (constraint, []error) {
 	c := new(constraintString)
 	c.reset()
-	es := make([]error, 0, 0)
+	es := make([]error, 0)
 	//c.k =  fi.Type.Kind()
 	c.k = getLastKind(fi.Type)
 	c.fi = fi
@@ -174,7 +174,7 @@ func stripEmptyString(ss []string) []string {
 	}
 	r := make([]string, 0)
 	for _, s := range ss {
-		if len(s) > 0 {
+		if s = strings.Trim(s, " "); len(s) > 0 {
 			r = append(r, s)
 		}
 	}
@@ -186,7 +186,7 @@ func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []e
 		return nil
 	}
 	name := fi.Name
-	es := make([]error, 0, 0)
+	es := make([]error, 0)
 
 	if c.minFlag == setYes && c.maxFlag == setYes {
 		if c.minLen > c.maxLen {
@@ -206,6 +206,16 @@ func postCheckConstraintString(c *constraintString, fi *reflect.StructField) []e
 		} else {
 			c.RegExCompile = r
 		}
+	}
+
+	// must set default value
+	if c.defaultFlag == setNo {
+		es = append(es, errors.New(fmt.Sprintf("`%s` should set default value", name)))
+	}
+
+	// check options for `in`
+	if c.inFlag == setYes && len(c.in) == 0 {
+		es = append(es, errors.New(fmt.Sprintf("`%s#in` options is empty ", name)))
 	}
 
 	return es

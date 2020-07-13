@@ -64,3 +64,19 @@ func TestValidObject2(t *testing.T) {
 	bs, _ := json.MarshalIndent(r, "", "  ")
 	fmt.Println(string(bs))
 }
+
+
+
+func TestValidObject3(t *testing.T) {
+	type Range struct {
+		D string  `json:"d" min:"1" max:"10" req:"true" in:" " regex:"^[a-d]+$"`
+	}
+
+	r := new(Range)
+	if es := Validates(r); len(es) > 0 {
+		fmt.Println(es)
+	}
+	ValidObject(r, true)
+	bs, _ := json.MarshalIndent(r, "", "  ")
+	fmt.Println(string(bs))
+}
