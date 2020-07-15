@@ -5,8 +5,8 @@
 <p>A Fast Validator for struct filed using tag, highly inspired by automatically recovery theory.</p>
 
 <p>There are numerous validators for golang, but almost of them lack of automatically 
-recovery from error. It's very easy to find errors exist during run-time. But if we wanna our process 
- is to be sure running in safe mode to keep our service is perfect available, it definitely require
+recovery from error. It's very easy to find errors during run-time. But if we wanna our process 
+ is to be sure running in safe mode to keep our service perfect available, it definitely require
  self-recovery ability, especially when wrong setting or arguments can be delivered
  by user, or other programs...
  </p>
@@ -60,7 +60,7 @@ output is
 ```
 
 <p><code>ValidObject</code>function will check struct filed whether is valid, 
-it will return the first error and skip next checking. Set parameter `fix` to <code>true</code> 
+it will return all errors found. Set parameter `fix` to <code>true</code> 
 if you wanna auto fix struct filed. It's very helpful to make sure the value in custom range, and set
 default value if necessary.</p>
 
